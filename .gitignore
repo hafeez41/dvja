@@ -64,3 +64,21 @@ modules.xml
 
 # End of https://www.gitignore.io/api/intellij+iml
 
+# Terraform state and backup files
+*.tfstate
+*.tfstate.backup
+
+# Local Terraform directories
+.terraform/
+
+# Sensitive variable values
+terraform.tfvars
+
+# Crash logs (if any)
+crash.log
+
+# OS-specific / editor junk
+*.log
+*.swp
+.DS_Store
+.idea/
