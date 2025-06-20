@@ -16,14 +16,18 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh '''
-                    mvn dependency:go-offline -Dmaven.compiler.fork=false || true
-                    mvn package -DskipTests -Dmaven.compiler.fork=false
-                '''
-            }
-        }
+        sstage('Build') {
+    steps {
+        sh '''
+            MAVEN_OPTS="-Xmx256m" \
+            mvn dependency:go-offline -Dmaven.compiler.fork=false || true
+
+            MAVEN_OPTS="-Xmx256m" \
+            mvn package -DskipTests -Dmaven.compiler.fork=false
+        '''
+    }
+}
+
 
         stage('Deploy to EC2') {
             steps {
