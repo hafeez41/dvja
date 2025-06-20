@@ -9,8 +9,12 @@ pipeline {
         ARTIFACT_NAME = "dvja.war"
     }
 
+    tools {
+        maven 'Maven_3' // Assumes "Maven_3" is set up in Jenkins global tools
+    }
+
     stages {
-        stage('Checkout') {
+        stage('Source') {
             steps {
                 git 'https://github.com/hafeez41/dvja.git'
             }
@@ -19,22 +23,46 @@ pipeline {
         stage('Build') {
     steps {
         sh '''
-            MAVEN_OPTS="-Xmx256m" \
-            mvn dependency:go-offline -Dmaven.compiler.fork=false || true
+            # Fail if no pom.xml
+            if [ ! -f pom.xml ]; then
+              echo "ERROR: pom.xml not found. Cannot build."
+              exit 1
+            fi
 
-            MAVEN_OPTS="-Xmx256m" \
-            mvn package -DskipTests -Dmaven.compiler.fork=false
+            # Resolve dependencies
+            mvn dependency:go-offline -B
+
+            # Compile source code
+            mvn clean compile -B
+
+            # Package into WAR (without running tests here)
+            mvn package -DskipTests -B
         '''
     }
 }
- 
 
-        stage('Deploy to EC2') {
+
+        stage('Test') {
             steps {
-                echo 'Deploy WAR to Tomcat on EC2 (same server)'
-                sh """
-                    cp target/${env.ARTIFACT_NAME} /opt/tomcat9/webapps/
-                """
+                sh 'mvn test'
+            }
+        }
+
+        stage('Security Scan') {
+            steps {
+                echo 'Placeholder for SonarQube or other static analysis'
+            }
+        }
+
+        stage('Artifact Upload') {
+            steps {
+                echo 'Placeholder for JFrog Artifactory upload'
+            }
+        }
+
+        stage('Deploy (EC2)') {
+            steps {
+                sh "cp target/${env.ARTIFACT_NAME} /opt/tomcat9/webapps/"
             }
         }
     }
