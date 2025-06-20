@@ -16,30 +16,15 @@ pipeline {
             }
         }
 
+        stage('Prep Maven Cache') {
+            steps {
+                sh 'mvn dependency:go-offline'
+            }
+        }
+
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests -Dmaven.compiler.fork=false'
-            }
-        }
-
-        // Optional: Keep test stage separate for now
-        stage('Unit Test') {
-            steps {
-                sh 'mvn test -Dmaven.compiler.fork=false'
-            }
-        }
-
-        // SonarQube skipped for now (not set up)
-/*
-        stage('Archive Artifact') {
-            steps {
-                archiveArtifacts artifacts: "target/${env.ARTIFACT_NAME}", fingerprint: true
-            }
-        }
-*/
-        stage('Upload to Artifactory') {
-            steps {
-                echo 'Upload to JFrog Artifactory would go here.'
+                sh 'mvn package -DskipTests -Dmaven.compiler.fork=false'
             }
         }
 
