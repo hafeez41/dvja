@@ -6,8 +6,8 @@ pipeline {
     }
 
     environment {
-        ARTIFACT_NAME = "dvja.war"
-    }
+    ARTIFACT_NAME = "dvja-1.0-SNAPSHOT.war"
+}
 
     stages {
         stage('Source') {
