@@ -32,7 +32,7 @@ pipeline {
                 }
             }
         }
-        testt
+        test
 */
         stage('Archive Artifact') {
             steps {
