@@ -16,7 +16,7 @@ pipeline {
             }
         }
 
-        sstage('Build') {
+        stage('Build') {
     steps {
         sh '''
             MAVEN_OPTS="-Xmx256m" \
