@@ -23,8 +23,8 @@ pipeline {
                 sh 'mvn test'
             }
         }
-
-        /*stage('SonarQube Analysis') {
+/*
+        stage('SonarQube Analysis') {
             steps {
                 // This requires SonarQube to be configured in Jenkins
                 withSonarQubeEnv('SonarQube') {
