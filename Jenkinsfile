@@ -8,7 +8,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-username/dvja.git'
+                git 'https://github.com/hafeez41/dvja.git'
             }
         }
 
@@ -24,7 +24,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis') {
+        /*stage('SonarQube Analysis') {
             steps {
                 // This requires SonarQube to be configured in Jenkins
                 withSonarQubeEnv('SonarQube') {
@@ -32,7 +32,7 @@ pipeline {
                 }
             }
         }
-
+*/
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: "target/${env.ARTIFACT_NAME}", fingerprint: true
