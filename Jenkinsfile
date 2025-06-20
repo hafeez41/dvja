@@ -9,10 +9,6 @@ pipeline {
         ARTIFACT_NAME = "dvja.war"
     }
 
-    tools {
-        maven 'Maven_3' // Assumes "Maven_3" is set up in Jenkins global tools
-    }
-
     stages {
         stage('Source') {
             steps {
@@ -21,42 +17,35 @@ pipeline {
         }
 
         stage('Build') {
-    steps {
-        sh '''
-            # Fail if no pom.xml
-            if [ ! -f pom.xml ]; then
-              echo "ERROR: pom.xml not found. Cannot build."
-              exit 1
-            fi
+            steps {
+                sh '''
+                    if [ ! -f pom.xml ]; then
+                      echo "ERROR: pom.xml not found"
+                      exit 1
+                    fi
 
-            # Resolve dependencies
-            mvn dependency:go-offline -B
-
-            # Compile source code
-            mvn clean compile -B
-
-            # Package into WAR (without running tests here)
-            mvn package -DskipTests -B
-        '''
-    }
-}
-
+                    mvn dependency:go-offline -B
+                    mvn clean compile -B
+                    mvn package -DskipTests -B
+                '''
+            }
+        }
 
         stage('Test') {
             steps {
-                sh 'mvn test'
+                sh 'mvn test -B'
             }
         }
 
         stage('Security Scan') {
             steps {
-                echo 'Placeholder for SonarQube or other static analysis'
+                echo 'Placeholder for SonarQube'
             }
         }
 
         stage('Artifact Upload') {
             steps {
-                echo 'Placeholder for JFrog Artifactory upload'
+                echo 'Placeholder for Artifactory'
             }
         }
 
@@ -64,6 +53,15 @@ pipeline {
             steps {
                 sh "cp target/${env.ARTIFACT_NAME} /opt/tomcat9/webapps/"
             }
+        }
+    }
+
+    post {
+        success {
+            archiveArtifacts artifacts: "target/${env.ARTIFACT_NAME}", fingerprint: true
+        }
+        failure {
+            echo "Build failed. Check logs."
         }
     }
 }
