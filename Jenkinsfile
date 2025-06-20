@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    options {
+        timeout(time: 10, unit: 'MINUTES')
+    }
+
     environment {
         ARTIFACT_NAME = "dvja.war"
     }
@@ -14,36 +18,28 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh 'mvn clean package -DskipTests'
+                sh 'mvn clean package -DskipTests -Dmaven.compiler.fork=false'
             }
         }
 
+        // Optional: Keep test stage separate for now
         stage('Unit Test') {
             steps {
-                sh 'mvn test'
+                sh 'mvn test -Dmaven.compiler.fork=false'
             }
         }
+
+        // SonarQube skipped for now (not set up)
 /*
-        stage('SonarQube Analysis') {
-            steps {
-                // This requires SonarQube to be configured in Jenkins
-                withSonarQubeEnv('SonarQube') {
-                    sh 'mvn sonar:sonar'
-                }
-            }
-        }
-        test
-*/
         stage('Archive Artifact') {
             steps {
                 archiveArtifacts artifacts: "target/${env.ARTIFACT_NAME}", fingerprint: true
             }
         }
-
+*/
         stage('Upload to Artifactory') {
             steps {
                 echo 'Upload to JFrog Artifactory would go here.'
-                // Will be implemented once JFrog is configured
             }
         }
 
